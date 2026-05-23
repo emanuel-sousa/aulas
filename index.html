@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expressões Algébricas — Lousa em Slides</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eef2f7;
+      color: #222;
+      line-height: 1.4;
+    }
+
+    .deck {
+      width: 100%;
+      min-height: 100vh;
+      padding: 20px 0 96px;
+    }
+
+    .controls {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 18px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 2px solid #d5dde8;
+      border-radius: 999px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+      z-index: 10;
+    }
+
+    .controls button {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 22px;
+      background: #1f4e79;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .controls button:hover {
+      background: #163957;
+    }
+
+    .controls button:disabled {
+      background: #aab7c4;
+      cursor: not-allowed;
+    }
+
+    .counter {
+      min-width: 88px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .slide {
+      display: none;
+      width: 1280px;
+      height: 720px;
+      margin: 0 auto 28px;
+      padding: 52px 68px;
+      background: white;
+      border-radius: 22px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+      page-break-after: always;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    .slide::after {
+      content: attr(data-slide);
+      position: absolute;
+      right: 34px;
+      bottom: 24px;
+      font-size: 20px;
+      color: #777;
+    }
+
+    h1 {
+      margin: 0;
+      padding: 22px 28px;
+      border-radius: 20px;
+      background: #ffe08a;
+      color: #4b3b00;
+      font-size: 56px;
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0 0 28px;
+      padding-left: 18px;
+      border-left: 12px solid #4f81bd;
+      color: #1f4e79;
+      font-size: 42px;
+    }
+
+    p {
+      font-size: 30px;
+      margin: 14px 0;
+    }
+
+    ul, ol {
+      font-size: 30px;
+      padding-left: 42px;
+      margin: 16px 0;
+    }
+
+    li {
+      margin: 12px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 22px;
+      font-size: 26px;
+    }
+
+    th {
+      background: #d9eaf7;
+      color: #1f4e79;
+    }
+
+    th, td {
+      border: 2px solid #9eb6c9;
+      padding: 14px 16px;
+      text-align: left;
+    }
+
+    .box {
+      margin: 24px 0;
+      padding: 24px 28px;
+      border-radius: 22px;
+      font-size: 31px;
+    }
+
+    .yellow {
+      background: #fff6cc;
+      border: 4px solid #f0b429;
+    }
+
+    .blue {
+      background: #eaf4ff;
+      border: 4px solid #5b9bd5;
+    }
+
+    .green {
+      background: #edf7e7;
+      border: 4px solid #70ad47;
+    }
+
+    .red {
+      background: #fde9e7;
+      border: 4px solid #c0504d;
+    }
+
+    .purple {
+      background: #f3eafa;
+      border: 4px solid #8064a2;
+    }
+
+    .orange {
+      background: #fff0df;
+      border: 4px solid #f4a340;
+    }
+
+    .formula {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 2px solid #d5dde8;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .center-formula {
+      display: block;
+      width: fit-content;
+      margin: 28px auto;
+      padding: 18px 38px;
+      border-radius: 20px;
+      background: #f8fafc;
+      border: 4px solid #d5dde8;
+      font-size: 58px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      line-height: 1.05;
+      margin: 0 4px;
+      font-weight: bold;
+    }
+
+    .frac .top {
+      display: block;
+      padding: 0 8px 4px;
+      border-bottom: 3px solid currentColor;
+    }
+
+    .frac .bottom {
+      display: block;
+      padding: 4px 8px 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .mini-card {
+      padding: 22px;
+      border-radius: 18px;
+      background: #fafafa;
+      border: 2px solid #ddd;
+      min-height: 150px;
+    }
+
+    .mini-card p {
+      font-size: 28px;
+    }
+
+    .big-word {
+      font-size: 72px;
+      font-weight: bold;
+      text-align: center;
+      color: #1f4e79;
+      margin-top: 70px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 34px;
+      color: #444;
+      margin-top: 28px;
+    }
+
+    .small-text {
+      font-size: 24px;
+    }
+
+    @media print {
+      .controls {
+        display: none;
+      }
+
+      .slide {
+        display: block;
+      }
+
+      @page {
+        size: 1280px 720px;
+        margin: 0;
+      }
+
+      body {
+        background: white;
+      }
+
+      .deck {
+        padding: 0;
+      }
+
+      .slide {
+        width: 1280px;
+        height: 720px;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <section class="slide active" data-slide="1/10">
+      <h1>Expressões Algébricas</h1>
+      <div class="big-word">números + letras</div>
+      <p class="subtitle">Uma explicação do zero para entender o assunto sem depender do livro.</p>
+    </section>
+
+    <section class="slide" data-slide="2/10">
+      <h2>Ideia principal</h2>
+      <div class="box yellow">
+        <strong>Ideia principal:</strong> uma expressão algébrica é uma conta escrita com números, letras e operações.
+        A letra representa um valor que pode mudar ou que ainda não sabemos.
+      </div>
+      <div class="center-formula">4 · x</div>
+      <p>Essa expressão pode servir para várias situações diferentes.</p>
+    </section>
+
+    <section class="slide" data-slide="3/10">
+      <h2>Começando do zero</h2>
+      <p>Imagine que cada pacote de figurinhas custa <strong>R$ 4,00</strong>.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Pacotes</th>
+            <th>Conta</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>4 · 1</td><td>R$ 4,00</td></tr>
+          <tr><td>2</td><td>4 · 2</td><td>R$ 8,00</td></tr>
+          <tr><td>5</td><td>4 · 5</td><td>R$ 20,00</td></tr>
+          <tr><td>x</td><td>4 · x</td><td>4x</td></tr>
+        </tbody>
+      </table>
+      <div class="box blue">A letra <span class="formula">x</span> representa uma quantidade que pode mudar.</div>
+    </section>
+
+    <section class="slide" data-slide="4/10">
+      <h2>O que a letra significa?</h2>
+      <p>A letra precisa ter um significado dentro do problema.</p>
+      <div class="grid-2">
+        <div class="mini-card">
+          <p>Se uma pizza custa <span class="formula">x</span> reais...</p>
+          <p>3 pizzas custam:</p>
+          <div class="center-formula">3x</div>
+        </div>
+        <div class="mini-card">
+          <p>Se uma camiseta custa <span class="formula">x</span> reais...</p>
+          <p>5 camisetas custam:</p>
+          <div class="center-formula">5x</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="5/10">
+      <h2>Atenção ao significado da letra</h2>
+      <div class="box red">
+        <strong>Cuidado:</strong> a letra não tem sempre o mesmo significado.
+        Em um problema, <span class="formula">x</span> pode ser o preço de uma camiseta.
+        Em outro, pode ser a quantidade de pacotes, a idade de alguém ou o número de pontos em um jogo.
+      </div>
+      <p>Por isso, antes de montar a conta, pergunte:</p>
+      <div class="center-formula">“O que o x representa aqui?”</div>
+    </section>
+
+    <section class="slide" data-slide="6/10">
+      <h2>Traduzindo palavras</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Frase</th>
+            <th>Expressão</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>O dobro de um número</td><td>2x</td></tr>
+          <tr><td>O triplo de um número</td><td>3x</td></tr>
+          <tr><td>A metade de um número</td><td><span class="frac"><span class="top">x</span><span class="bottom">2</span></span></td></tr>
+          <tr><td>A terça parte de um número</td><td><span class="frac"><span class="top">x</span><span class="bottom">3</span></span></td></tr>
+          <tr><td>Um número mais 8</td><td>x + 8</td></tr>
+          <tr><td>Um número menos 6</td><td>x − 6</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="slide" data-slide="7/10">
+      <h2>Exemplo: pontos em um jogo</h2>
+      <p>Em um jogo, cada ficha vale <strong>10 pontos</strong>.</p>
+      <p>Se o jogador pegou <span class="formula">x</span> fichas:</p>
+      <div class="center-formula">10x</div>
+      <p>Se ele também ganhou bônus de 50 pontos:</p>
+      <div class="center-formula">10x + 50</div>
+    </section>
+
+    <section class="slide" data-slide="8/10">
+      <h2>Exemplo com fração</h2>
+      <p>João tem <span class="formula">x</span> bolinhas.</p>
+      <p>Maria tem metade da quantidade de João:</p>
+      <div class="center-formula">
+        <span class="frac"><span class="top">x</span><span class="bottom">2</span></span>
+      </div>
+      <p>Pedro tem o dobro da quantidade de Maria:</p>
+      <div class="center-formula">
+        2 · <span class="frac"><span class="top">x</span><span class="bottom">2</span></span> = x
+      </div>
+    </section>
+
+    <section class="slide" data-slide="9/10">
+      <h2>Passo a passo</h2>
+      <div class="box purple">
+        <p><strong>1.</strong> Descubra o que a letra representa.</p>
+        <p><strong>2.</strong> Procure palavras como dobro, metade, mais, menos e vezes.</p>
+        <p><strong>3.</strong> Escreva a expressão usando números, letras e sinais.</p>
+      </div>
+      <div class="box green">
+        Exemplo: uma pessoa tem <span class="formula">x</span> anos. Daqui a 5 anos: <span class="formula">x + 5</span>.
+      </div>
+    </section>
+
+    <section class="slide" data-slide="10/10">
+      <h2>Exercícios rápidos</h2>
+      <ol>
+        <li>Uma borracha custa <strong>x</strong> reais. Quanto custam 4 borrachas?</li>
+        <li>Um número é representado por <strong>x</strong>. Como escrever o dobro?</li>
+        <li>Um número é representado por <strong>x</strong>. Como escrever a metade?</li>
+        <li>Uma pessoa tem <strong>x</strong> anos. Como escrever a idade dela daqui a 7 anos?</li>
+      </ol>
+      <div class="box yellow">
+        <strong>Gabarito:</strong> 1) 4x &nbsp; 2) 2x &nbsp; 3)
+        <span class="frac"><span class="top">x</span><span class="bottom">2</span></span>
+        &nbsp; 4) x + 7
+      </div>
+    </section>
+  </main>
+
+  <nav class="controls" aria-label="Controle dos slides">
+    <button id="prevBtn" type="button">← Anterior</button>
+    <span id="counter" class="counter">1 / 10</span>
+    <button id="nextBtn" type="button">Próximo →</button>
+  </nav>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+    let currentSlide = 0;
+
+    function showSlide(index) {
+      currentSlide = Math.max(0, Math.min(index, slides.length - 1));
+
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === currentSlide);
+      });
+
+      counter.textContent = `${currentSlide + 1} / ${slides.length}`;
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === slides.length - 1;
+    }
+
+    prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
+    nextBtn.addEventListener('click', () => showSlide(currentSlide + 1));
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+        event.preventDefault();
+        showSlide(currentSlide + 1);
+      }
+
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+        event.preventDefault();
+        showSlide(currentSlide - 1);
+      }
+
+      if (event.key === 'Home') {
+        showSlide(0);
+      }
+
+      if (event.key === 'End') {
+        showSlide(slides.length - 1);
+      }
+    });
+
+    showSlide(0);
+  </script>
+</body>
+</html>

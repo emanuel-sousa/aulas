@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aula 2 — Sequências Numéricas e Termos Semelhantes</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eef2f7;
+      color: #222;
+      line-height: 1.4;
+    }
+
+    .deck {
+      width: 100%;
+      min-height: 100vh;
+      padding: 20px 0 96px;
+    }
+
+    .controls {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 18px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 2px solid #d5dde8;
+      border-radius: 999px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+      z-index: 10;
+    }
+
+    .controls button {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 22px;
+      background: #1f4e79;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .controls button:hover {
+      background: #163957;
+    }
+
+    .controls button:disabled {
+      background: #aab7c4;
+      cursor: not-allowed;
+    }
+
+    .counter {
+      min-width: 88px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .slide {
+      display: none;
+      width: 1280px;
+      height: 720px;
+      margin: 0 auto 28px;
+      padding: 52px 68px;
+      background: white;
+      border-radius: 22px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+      page-break-after: always;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    .slide::after {
+      content: attr(data-slide);
+      position: absolute;
+      right: 34px;
+      bottom: 24px;
+      font-size: 20px;
+      color: #777;
+    }
+
+    h1 {
+      margin: 0;
+      padding: 22px 28px;
+      border-radius: 20px;
+      background: #ffe08a;
+      color: #4b3b00;
+      font-size: 52px;
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0 0 26px;
+      padding-left: 18px;
+      border-left: 12px solid #4f81bd;
+      color: #1f4e79;
+      font-size: 42px;
+    }
+
+    p {
+      font-size: 30px;
+      margin: 14px 0;
+    }
+
+    ul, ol {
+      font-size: 29px;
+      padding-left: 42px;
+      margin: 16px 0;
+    }
+
+    li {
+      margin: 11px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 25px;
+    }
+
+    th {
+      background: #d9eaf7;
+      color: #1f4e79;
+    }
+
+    th, td {
+      border: 2px solid #9eb6c9;
+      padding: 12px 14px;
+      text-align: left;
+    }
+
+    .box {
+      margin: 22px 0;
+      padding: 22px 26px;
+      border-radius: 22px;
+      font-size: 30px;
+    }
+
+    .yellow { background: #fff6cc; border: 4px solid #f0b429; }
+    .blue { background: #eaf4ff; border: 4px solid #5b9bd5; }
+    .green { background: #edf7e7; border: 4px solid #70ad47; }
+    .red { background: #fde9e7; border: 4px solid #c0504d; }
+    .purple { background: #f3eafa; border: 4px solid #8064a2; }
+    .orange { background: #fff0df; border: 4px solid #f4a340; }
+
+    .formula {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 2px solid #d5dde8;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .center-formula {
+      display: block;
+      width: fit-content;
+      margin: 24px auto;
+      padding: 16px 36px;
+      border-radius: 20px;
+      background: #f8fafc;
+      border: 4px solid #d5dde8;
+      font-size: 54px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      line-height: 1.05;
+      margin: 0 4px;
+      font-weight: bold;
+    }
+
+    .frac .top {
+      display: block;
+      padding: 0 8px 4px;
+      border-bottom: 3px solid currentColor;
+    }
+
+    .frac .bottom {
+      display: block;
+      padding: 4px 8px 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .mini-card {
+      padding: 22px;
+      border-radius: 18px;
+      background: #fafafa;
+      border: 2px solid #ddd;
+      min-height: 150px;
+    }
+
+    .mini-card p {
+      font-size: 27px;
+    }
+
+    .big-word {
+      font-size: 64px;
+      font-weight: bold;
+      text-align: center;
+      color: #1f4e79;
+      margin-top: 70px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 34px;
+      color: #444;
+      margin-top: 28px;
+    }
+
+    .sequence {
+      display: block;
+      width: fit-content;
+      margin: 22px auto;
+      padding: 18px 34px;
+      border-radius: 20px;
+      background: #fff6cc;
+      border: 4px solid #f0b429;
+      font-size: 50px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    .small-text {
+      font-size: 24px;
+    }
+
+    .good {
+      color: #2f6b20;
+      font-weight: bold;
+    }
+
+    .bad {
+      color: #9b1c1c;
+      font-weight: bold;
+    }
+
+    @media print {
+      .controls {
+        display: none;
+      }
+
+      .slide {
+        display: block;
+      }
+
+      @page {
+        size: 1280px 720px;
+        margin: 0;
+      }
+
+      body {
+        background: white;
+      }
+
+      .deck {
+        padding: 0;
+      }
+
+      .slide {
+        width: 1280px;
+        height: 720px;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <section class="slide active" data-slide="1/12">
+      <h1>Aula 2 — Sequências Numéricas e Termos Semelhantes</h1>
+      <div class="big-word">padrões + letras</div>
+      <p class="subtitle">Continuação da aula sobre expressões algébricas.</p>
+    </section>
+
+    <section class="slide" data-slide="2/12">
+      <h2>1. O que é uma sequência?</h2>
+      <div class="box yellow">
+        <strong>Sequência numérica</strong> é uma lista de números organizada em certa ordem.
+        Muitas vezes, essa lista segue uma regra ou padrão.
+      </div>
+      <div class="sequence">5, 10, 15, 20, 25, ...</div>
+      <p>Nessa sequência, os números aumentam de 5 em 5.</p>
+    </section>
+
+    <section class="slide" data-slide="3/12">
+      <h2>2. Sequência não é bagunça</h2>
+      <p>Uma sequência normalmente tem uma regra.</p>
+      <div class="grid-2">
+        <div class="mini-card">
+          <p class="good">É sequência</p>
+          <div class="sequence" style="font-size: 38px;">2, 4, 6, 8, 10, ...</div>
+          <p>Aumenta de 2 em 2.</p>
+        </div>
+        <div class="mini-card">
+          <p class="bad">Não parece sequência</p>
+          <div class="sequence" style="font-size: 38px;">3, 18, 5, 41, 9</div>
+          <p>Não há uma regra clara.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="4/12">
+      <h2>3. Sequência finita e infinita</h2>
+      <div class="grid-2">
+        <div class="mini-card">
+          <p><strong>Finita</strong></p>
+          <div class="sequence" style="font-size: 38px;">8, 10, 12, 14</div>
+          <p>Tem começo e fim.</p>
+        </div>
+        <div class="mini-card">
+          <p><strong>Infinita</strong></p>
+          <div class="sequence" style="font-size: 38px;">5, 10, 15, 20, ...</div>
+          <p>Continua sem parar.</p>
+        </div>
+      </div>
+      <div class="box blue">As reticências <span class="formula">...</span> indicam que a sequência continua.</div>
+    </section>
+
+    <section class="slide" data-slide="5/12">
+      <h2>4. Posição de um termo</h2>
+      <p>Cada número da sequência ocupa uma posição.</p>
+      <div class="sequence">3, 6, 9, 12, 15, ...</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Posição</th>
+            <th>1ª</th>
+            <th>2ª</th>
+            <th>3ª</th>
+            <th>4ª</th>
+            <th>5ª</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Termo</td>
+            <td>3</td>
+            <td>6</td>
+            <td>9</td>
+            <td>12</td>
+            <td>15</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>O termo da posição <span class="formula">n</span> pode ser chamado de <span class="formula">aₙ</span>.</p>
+    </section>
+
+    <section class="slide" data-slide="6/12">
+      <h2>5. Lei de formação</h2>
+      <div class="box green">
+        <strong>Lei de formação</strong> é a regra usada para encontrar os termos de uma sequência.
+      </div>
+      <p>Exemplo: se a regra é multiplicar a posição por 3:</p>
+      <div class="center-formula">aₙ = 3n</div>
+      <table>
+        <thead>
+          <tr><th>n</th><th>Conta</th><th>aₙ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>3 · 1</td><td>3</td></tr>
+          <tr><td>2</td><td>3 · 2</td><td>6</td></tr>
+          <tr><td>3</td><td>3 · 3</td><td>9</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="slide" data-slide="7/12">
+      <h2>6. Sequência dos quadrados</h2>
+      <div class="sequence">1, 4, 9, 16, 25, 36, ...</div>
+      <p>Essa sequência é formada pelos quadrados das posições.</p>
+      <div class="center-formula">aₙ = n²</div>
+      <table>
+        <thead>
+          <tr><th>n</th><th>Conta</th><th>Termo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>1²</td><td>1</td></tr>
+          <tr><td>2</td><td>2²</td><td>4</td></tr>
+          <tr><td>3</td><td>3²</td><td>9</td></tr>
+          <tr><td>4</td><td>4²</td><td>16</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="slide" data-slide="8/12">
+      <h2>7. Como achar um termo distante?</h2>
+      <p>Na sequência com lei de formação <span class="formula">aₙ = n²</span>, qual é o 12º termo?</p>
+      <div class="center-formula">a₁₂ = 12² = 144</div>
+      <div class="box blue">
+        Em vez de escrever todos os termos até o 12º, usamos a regra da sequência.
+      </div>
+    </section>
+
+    <section class="slide" data-slide="9/12">
+      <h2>8. Termos algébricos semelhantes</h2>
+      <div class="box yellow">
+        <strong>Termos semelhantes</strong> são termos que têm a mesma parte literal:
+        mesmas letras e mesmos expoentes.
+      </div>
+      <table>
+        <thead>
+          <tr><th>Termos</th><th>São semelhantes?</th><th>Motivo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>45x e 2x</td><td>Sim</td><td>ambos têm x</td></tr>
+          <tr><td>5xy e 12xy</td><td>Sim</td><td>ambos têm xy</td></tr>
+          <tr><td>8ab e 9b</td><td>Não</td><td>ab é diferente de b</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="slide" data-slide="10/12">
+      <h2>9. Reduzindo termos semelhantes</h2>
+      <p>Quando os termos são semelhantes, somamos ou subtraímos apenas os números da frente.</p>
+      <div class="center-formula">2x + 4x + 6x = 12x</div>
+      <div class="box green">
+        Fazemos <span class="formula">2 + 4 + 6 = 12</span> e mantemos a letra <span class="formula">x</span>.
+      </div>
+      <div class="center-formula">12y − 20y = −8y</div>
+    </section>
+
+    <section class="slide" data-slide="11/12">
+      <h2>10. Perímetro com letras</h2>
+      <p>O perímetro é a soma de todos os lados de uma figura.</p>
+      <div class="box orange">
+        Se um quadrado tem todos os lados medindo <span class="formula">4x</span>, então:
+      </div>
+      <div class="center-formula">4x + 4x + 4x + 4x = 16x</div>
+      <p>Somamos os termos semelhantes e mantemos a parte literal.</p>
+    </section>
+
+    <section class="slide" data-slide="12/12">
+      <h2>Exercícios rápidos</h2>
+      <ol>
+        <li>Continue a sequência: <strong>4, 8, 12, 16, ___</strong></li>
+        <li>Na sequência <strong>2, 4, 6, 8, ...</strong>, qual é a regra?</li>
+        <li>Se <strong>aₙ = n²</strong>, quanto vale <strong>a₅</strong>?</li>
+        <li>Reduza: <strong>3x + 5x − 2x</strong></li>
+        <li>Reduza: <strong>10y − 4y</strong></li>
+      </ol>
+      <div class="box yellow">
+        <strong>Gabarito:</strong> 1) 20 &nbsp; 2) aumenta de 2 em 2 &nbsp; 3) 25 &nbsp; 4) 6x &nbsp; 5) 6y
+      </div>
+    </section>
+  </main>
+
+  <nav class="controls" aria-label="Controle dos slides">
+    <button id="prevBtn" type="button">← Anterior</button>
+    <span id="counter" class="counter">1 / 12</span>
+    <button id="nextBtn" type="button">Próximo →</button>
+  </nav>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+    let currentSlide = 0;
+
+    function showSlide(index) {
+      currentSlide = Math.max(0, Math.min(index, slides.length - 1));
+
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === currentSlide);
+      });
+
+      counter.textContent = `${currentSlide + 1} / ${slides.length}`;
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === slides.length - 1;
+    }
+
+    prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
+    nextBtn.addEventListener('click', () => showSlide(currentSlide + 1));
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+        event.preventDefault();
+        showSlide(currentSlide + 1);
+      }
+
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+        event.preventDefault();
+        showSlide(currentSlide - 1);
+      }
+
+      if (event.key === 'Home') {
+        showSlide(0);
+      }
+
+      if (event.key === 'End') {
+        showSlide(slides.length - 1);
+      }
+    });
+
+    showSlide(0);
+  </script>
+</body>
+</html>
